@@ -86,22 +86,31 @@ async function singleNFTInfoGenerator() {
 }
 
 async function mintTokens(tokenId, numTokens, tokenPrice) {
-    if (!mainContract) {
-        mainContract = await connectContract();
+    if (typeof window.ethereum === "undefined") {
+        console.error("MetaMask not detected!");
+        return false;
     }
+
     try {
-        // Convert tokenPrice and numTokens to BigInt
-        const tokenPriceBigInt = BigInt(tokenPrice);
-        const numTokensBigInt = BigInt(numTokens);
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner(); // Get connected wallet
 
-        // Calculate totalCost using BigInt arithmetic
-        const totalCostBigInt = tokenPriceBigInt * numTokensBigInt;
+        let abi = "";
+        let ABIurl = "https://api.jsonstorage.net/v1/json/668506ec-0348-4974-b01e-e02c92db7a5b/e3d1146b-63bb-4187-865c-e23cd45bbd87";
+        const response = await axios.get(ABIurl);
+        abi = response.data;
 
-        // Convert totalCostBigInt back to a string for ethers.js
+        let contractAddress = "0x4b46599f43ade2d9f04523ab6f10c87517a051e0";
+        let contract = new ethers.Contract(contractAddress, abi, signer);
+
+        // Convert values to BigInt
+        const totalCostBigInt = BigInt(tokenPrice) * BigInt(numTokens);
         const totalCostString = totalCostBigInt.toString();
 
-        const tx = await mainContract.mint(tokenId, numTokens, { value: totalCostString });
+        // Execute mint transaction with connected wallet
+        const tx = await contract.mint(tokenId, numTokens, { value: totalCostString });
         await tx.wait();
+
         console.log(`Successfully minted ${numTokens} tokens for tokenId ${tokenId}`);
         return true;
     } catch (error) {
@@ -109,7 +118,6 @@ async function mintTokens(tokenId, numTokens, tokenPrice) {
         return false;
     }
 }
-
 
 const contractFunctions = {
     campainCreate,
