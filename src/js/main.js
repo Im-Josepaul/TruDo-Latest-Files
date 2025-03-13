@@ -103,6 +103,15 @@ async function mintTokens(tokenId, numTokens, tokenPrice) {
         let contractAddress = "0x4b46599f43ade2d9f04523ab6f10c87517a051e0";
         let contract = new ethers.Contract(contractAddress, abi, signer);
 
+        // Fetch tokenURI from contract
+        const nftData = await singleCampaignInfo(tokenId);
+        let metadataResponse = await fetch(nftData.tokenURI);
+        if (!metadataResponse.ok) throw new Error(`Failed to fetch metadata: ${metadataResponse.statusText}`);
+        let metadata = await metadataResponse.json();
+        let imageUrl = metadata.imageUrl; // Extract image URL from metadata
+        let campaignName = metadata.campaignname;
+        console.log(imageUrl)
+
         // Convert values to BigInt
         const totalCostBigInt = BigInt(tokenPrice) * BigInt(numTokens);
         const totalCostString = totalCostBigInt.toString();
@@ -112,10 +121,46 @@ async function mintTokens(tokenId, numTokens, tokenPrice) {
         await tx.wait();
 
         console.log(`Successfully minted ${numTokens} tokens for tokenId ${tokenId}`);
+
+        // Add NFT to MetaMask
+        await addNFTToMetaMask(contractAddress, tokenId,campaignName, imageUrl);
+
         return true;
     } catch (error) {
         console.error("Error minting tokens:", error);
         return false;
+    }
+}
+
+async function addNFTToMetaMask(contractAddress, tokenId,campaignName, imageUrl) {
+    if (!window.ethereum) {
+        console.error("MetaMask not detected!");
+        return;
+    }
+
+    try {
+        console.log(`Adding NFT to MetaMask: Token ID ${tokenId}, Image: ${imageUrl}`);
+
+        const wasAdded = await window.ethereum.request({
+            method: "wallet_watchAsset",
+            params: {
+                type: "ERC1155",
+                options: {
+                    address: contractAddress,
+                    id: tokenId.toString(),
+                    symbol: campaignName,
+                    image: imageUrl, // Pass image URL to MetaMask
+                },
+            },
+        });
+
+        if (wasAdded) {
+            console.log("NFT successfully added to MetaMask!");
+        } else {
+            console.log("NFT was not added to MetaMask.");
+        }
+    } catch (error) {
+        console.error("Error adding NFT to MetaMask:", error);
     }
 }
 
