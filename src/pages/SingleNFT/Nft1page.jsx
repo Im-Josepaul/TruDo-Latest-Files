@@ -18,6 +18,7 @@ const Nft1page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [numTokens, setNumTokens] = useState(1);
+  const [campaignInfo, setCampaignInfo] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -29,7 +30,7 @@ const Nft1page = () => {
       try {
         const result = await contractFunctions.singleCampaignInfo(partialNFT.tokenId);
         
-        let campaignInfo1 = {
+        let campaignData = {
           recipient: result[0],  
           tokenPrice: ethers.formatEther(result[1].toString()),  // Convert Wei to ETH
           tokenURI: result[2],   
@@ -37,9 +38,11 @@ const Nft1page = () => {
           totalCostReceived: ethers.formatEther(result[4].toString()), // Convert Wei to ETH
           totalTokensMinted: result[5].toString()  // Keep as a string since it's a count
       };
+
+      setCampaignInfo(campaignData);
   
       // Log the campaign details to the console
-      console.log("Campaign Details:", campaignInfo1);
+      console.log("Campaign Details:", campaignData);
   
         
         if (!mounted) return;
@@ -78,6 +81,7 @@ const Nft1page = () => {
 
         if (success) {
             alert("NFT(s) minted successfully!");
+            window.location.reload()
         } else {
             setError("Failed to mint NFT(s). Please check console for details.");
         }
@@ -146,8 +150,10 @@ const Nft1page = () => {
         </div>
         <div className="col-lg-6 align-self-center">
           <h4>{location.state.nft.campaignname}</h4>
-          <span className="price">{nft.tokenPrice}</span>
-          <p>{partialNFT.description}</p>
+          <span className="price">{campaignInfo.tokenPrice}  ETH</span><br></br>
+          <span className="price"></span><br></br>
+          <p>{partialNFT.description} <br></br>Target Amount In ETH : {campaignInfo.totalAmountNeeded}<br></br>No Of Total ETH Received: {campaignInfo.totalCostReceived} ETH <br></br>No Of NFT Buyed Till Now: {campaignInfo.totalTokensMinted}</p>
+          <br></br>
           <form id="qty" onSubmit={(e) => { e.preventDefault(); handleBuyNFT(); }}>
                 <input
                     type="number"
