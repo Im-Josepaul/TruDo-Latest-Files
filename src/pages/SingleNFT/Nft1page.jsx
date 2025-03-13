@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import ReactLoading from "react-loading";
 import {Link,useLocation} from 'react-router-dom'
+import { ethers} from "ethers";
 
 import "../Mainpage/css/fontawesome.css"
 import "../Mainpage/css/index.css"
@@ -12,11 +13,11 @@ import contractFunctions from "../../js/main.js";
 const Nft1page = () => {
   const location = useLocation();
   let partialNFT = location.state.nft;
-  console.log(partialNFT);
 
   const [nft, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [numTokens, setNumTokens] = useState(1);
 
   useEffect(() => {
     let mounted = true;
@@ -27,6 +28,19 @@ const Nft1page = () => {
       
       try {
         const result = await contractFunctions.singleCampaignInfo(partialNFT.tokenId);
+        
+        let campaignInfo1 = {
+          recipient: result[0],  
+          tokenPrice: ethers.formatEther(result[1].toString()),  // Convert Wei to ETH
+          tokenURI: result[2],   
+          totalAmountNeeded: ethers.formatEther(result[3].toString()), // Convert Wei to ETH
+          totalCostReceived: ethers.formatEther(result[4].toString()), // Convert Wei to ETH
+          totalTokensMinted: result[5].toString()  // Keep as a string since it's a count
+      };
+  
+      // Log the campaign details to the console
+      console.log("Campaign Details:", campaignInfo1);
+  
         
         if (!mounted) return;
         
@@ -53,6 +67,27 @@ const Nft1page = () => {
       mounted = false;
     };
   }, []);
+
+  const handleBuyNFT = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+        const result = await contractFunctions.singleCampaignInfo(partialNFT.tokenId);
+        const tokenPrice = result[1]; // get token price from contract data
+        const success = await contractFunctions.mintTokens(partialNFT.tokenId, numTokens, tokenPrice);
+
+        if (success) {
+            alert("NFT(s) minted successfully!");
+        } else {
+            setError("Failed to mint NFT(s). Please check console for details.");
+        }
+    } catch (error) {
+        setError(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
 
   if (isLoading) return(
     <>
@@ -113,10 +148,18 @@ const Nft1page = () => {
           <h4>{location.state.nft.campaignname}</h4>
           <span className="price">{nft.tokenPrice}</span>
           <p>{partialNFT.description}</p>
-          <form id="qty" action="#">
-            <input type="qty" className="form-control" id={1} aria-describedby="quantity" placeholder={1} />
-            <button type="submit"><i className="fa fa-shopping-bag" /> ADD TO CART</button>
-          </form>
+          <form id="qty" onSubmit={(e) => { e.preventDefault(); handleBuyNFT(); }}>
+                <input
+                    type="number"
+                    className="form-control"
+                    id="quantity"
+                    aria-describedby="quantity"
+                    placeholder="1"
+                    value={numTokens}
+                    onChange={(e) => setNumTokens(parseInt(e.target.value))}
+                />
+                <button type="submit"><i className="fa fa-shopping-bag" /> BUY NFT</button>
+            </form>
           {/* <ul>
       <li><span>Game ID:</span> COD MMII</li>
       <li><span>Genre:</span> <a href="#">Action</a>, <a href="#">Team</a>, <a href="#">Single</a></li>

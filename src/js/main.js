@@ -45,6 +45,7 @@ async function singleCampaignInfo(tokenId) {
     if(!mainContract){
         mainContract = await connectContract();
     }
+    
     return await mainContract.getCampaignInfo(tokenId);
 }
 
@@ -84,10 +85,37 @@ async function singleNFTInfoGenerator() {
     return nftArray;
 }
 
+async function mintTokens(tokenId, numTokens, tokenPrice) {
+    if (!mainContract) {
+        mainContract = await connectContract();
+    }
+    try {
+        // Convert tokenPrice and numTokens to BigInt
+        const tokenPriceBigInt = BigInt(tokenPrice);
+        const numTokensBigInt = BigInt(numTokens);
+
+        // Calculate totalCost using BigInt arithmetic
+        const totalCostBigInt = tokenPriceBigInt * numTokensBigInt;
+
+        // Convert totalCostBigInt back to a string for ethers.js
+        const totalCostString = totalCostBigInt.toString();
+
+        const tx = await mainContract.mint(tokenId, numTokens, { value: totalCostString });
+        await tx.wait();
+        console.log(`Successfully minted ${numTokens} tokens for tokenId ${tokenId}`);
+        return true;
+    } catch (error) {
+        console.error("Error minting tokens:", error);
+        return false;
+    }
+}
+
+
 const contractFunctions = {
     campainCreate,
     singleCampaignInfo,
-    singleNFTInfoGenerator
+    singleNFTInfoGenerator,
+    mintTokens
 };
 export default contractFunctions;
 
