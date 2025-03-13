@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 
 import MainP from "../src/pages/Mainpage/Mainpage";
 import CreateCampaign from "../src/pages/CreateCampaign/CreateCam";
+import SingleNftPage from '../src/pages/SingleNFT/Nft1page';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainP />} />
         <Route path="/createCampaign" element={<CreateCampaign />} />
+        <Route path="/nftpage" element={<SingleNftPage />} />
       </Routes>
     </>
   );

@@ -1,9 +1,10 @@
 import React, { useState,useEffect } from "react";
+import {Link, useNavigate } from "react-router-dom";
+import ReactLoading from "react-loading";
 
-import { json, Link, useNavigate } from "react-router-dom";
 import Navbar from "./Header";
 import "./css/fontawesome.css";
-import "./css/templatemo-lugx-gaming.css";
+import "./css/index.css";
 import "./css/owl.css";
 import "./css/animate.css";
 import contractFunctions from "../../js/main.js";
@@ -14,6 +15,8 @@ import graphup from "./images/graph-up-arrow.svg";
 import cashcoin from "./images/cash-coin.svg";
 
 const Mainpage = () => {
+  const navigate = useNavigate();
+
   const [nft, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,8 +78,15 @@ const Mainpage = () => {
     };
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (isLoading) return(
+    <>
+    <div className="loading">
+      <h3>Loading</h3>
+      <ReactLoading id="icon" type="cylon" color="#0071f8" height={100} width={50} />
+    </div>
+    </>
+  ) 
+  if (error) return <div class="loading">Error: {error}</div>;
 
   return (
     <>
@@ -178,7 +188,7 @@ const Mainpage = () => {
             </div>
             <div className="col-lg-6">
               <div className="main-button">
-                <a href="shop.html">View All</a>
+                <a href="#">View All</a>
               </div>
             </div>
 
@@ -186,13 +196,14 @@ const Mainpage = () => {
               <div className="col-lg-3 col-md-6 col-sm-12">
                 <div className="item">
                   <div className="thumb">
-                    <a>
+                  <Link to="/nftpage" state={{ nft: nft[0] }}>
                       <img src={nft[0].imageUrl} alt="" />         
-                    </a>
+                  </Link>
                   </div>
                   <div className="down-content">
                     <span className="category">{nft[0].campaignname}</span>
-                    <h4>Rebuild Wayanad</h4>
+                    <h4>needs your support</h4>
+                    <Link to="/nftpage" state={{ nft: nft[0] }} className="explore-link">Explore</Link>
                   </div>
                 </div>
               </div>
@@ -200,13 +211,14 @@ const Mainpage = () => {
               <div className="col-lg-3 col-md-6 col-sm-12">
                 <div className="item">
                   <div className="thumb">
-                    <a>
+                  <Link to="/nftpage" state={{ nft: nft[1] }}>
                       <img src={nft[1].imageUrl} alt="" />
-                    </a>
+                    </Link>
                   </div>
                   <div className="down-content">
                     <span className="category">{nft[1].campaignname}</span>
-                    <h4>Pager Aid</h4>
+                    <h4>needs your support</h4>
+                    <Link to="/nftpage" state={{ nft: nft[1] }} className="explore-link">Explore</Link>
                   </div>
                 </div>
               </div>
@@ -214,14 +226,14 @@ const Mainpage = () => {
               <div className="col-lg-3 col-md-6 col-sm-12">
                 <div className="item">
                   <div className="thumb">
-                    <a>
+                  <Link to="/nftpage" state={{ nft: nft[2] }}>
                       <img src={nft[2].imageUrl} alt="" />
-                    </a>
+                  </Link>
                   </div>
                   <div className="down-content">
                     <span className="category">{nft[2].campaignname}</span>
-                    <h4>ReLeaf</h4>
-                    <a>Explore</a>
+                    <h4>needs your support</h4>
+                    <Link to="/nftpage" state={{ nft: nft[2] }} className="explore-link">Explore</Link>
                   </div>
                 </div>
               </div>
@@ -229,14 +241,14 @@ const Mainpage = () => {
               <div className="col-lg-3 col-md-6 col-sm-12">
                 <div className="item">
                   <div className="thumb">
-                    <a>
+                  <Link to="/nftpage" state={{ nft: nft[3] }}>
                       <img src={nft[3].imageUrl} alt="" />
-                    </a>
+                  </Link>
                   </div>
                   <div className="down-content">
                     <span className="category">{nft[3].campaignname}</span>
-                    <h4>Assam</h4>
-                    <a>Explore</a>
+                    <h4>needs your support</h4>
+                    <Link to="/nftpage" state={{ nft: nft[3] }} className="explore-link">Explore</Link>
                   </div>
                 </div>
               </div>

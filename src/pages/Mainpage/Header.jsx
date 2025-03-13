@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import "./css/fontawesome.css";
-import "./css/templatemo-lugx-gaming.css";
+import "./css/index.css";
 import "./css/owl.css";
 import "./css/animate.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -36,11 +36,6 @@ const Header = () => {
               <a href="#" className="active">
                 Home
               </a>
-            </li>
-            <li>
-              <Link to="/nft">
-                <a>NFT</a>
-              </Link>
             </li>
             <li>
               <Link to="/createCampaign">

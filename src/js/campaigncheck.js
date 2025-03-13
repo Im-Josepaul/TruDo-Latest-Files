@@ -86,8 +86,12 @@ async function singleNFTInfoGenerator() {
     return nftArray;
 }
 
-let result = await singleNFTInfoGenerator();
-console.log(result);
+// let result = await singleNFTInfoGenerator();
+// console.log(result);
 
 // let result = await getAllCampaignDetails();
 // console.log(result);
+
+
+let result = await singleCampaignInfo(10);
+console.log(result);

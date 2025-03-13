@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./createcamp.css";
+import { AnimatePresence, motion } from 'framer-motion';
 import { PinataSDK } from "pinata-web3";
 import contractFunctions from "../../js/main.js"
 
 
 const CreateCam = () => {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  
   const [campaignName, setCampaignName] = useState("");
   const [description, setDescription] = useState("");
   const [recepadd, setRecepadd] = useState("");
@@ -65,12 +69,26 @@ const CreateCam = () => {
   }
 
   async function createCampaign() {
-    const imageurl = await getMetadata();
-    var metaData = "";
-    if (imageurl) {
-      metaData = await uploadmeta(imageurl);
+    try{
+      const imageurl = await getMetadata();
+      var metaData = "";
+      if (imageurl) {
+        metaData = await uploadmeta(imageurl);
+        if(metaData === ""){
+          throw new Error("Metadata is empty");
+        }
+      }
+      
+      await contractFunctions.campainCreate(recepadd,tokenprice,metaData,targetAmount);
+      setShowSuccess(true);
+      setShowError(false);
+      setTimeout(() => setShowSuccess(false), 3000);
     }
-    await contractFunctions.campaignCreate(recepadd,tokenprice,metaData,targetAmount);
+    catch(error){
+      setShowError(true);
+      setShowSuccess(false);
+      setTimeout(() => setShowError(false), 3000);
+    }
   }
 
   return (
@@ -136,16 +154,32 @@ const CreateCam = () => {
             required
           />
         </div>
-        {/* <button
-          onClick={createMetadata}
-          type="submit"
-          className="submit-button"
-        >
-          Create Metadata
-        </button> */}
         <button onClick={createCampaign} type="submit" className="submit-button mt-3">
           Create Campaign
         </button>
+        <AnimatePresence>
+          {showSuccess && (
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-green-500 text-black font-[Poppins] text-center p-2 mt-4 rounded"
+            >
+                Campaign created successfully ✅
+            </motion.div>
+          )}
+
+          {showError && (
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-red-500 text-black font-[Poppins] text-center p-2 mt-4 rounded"
+            >
+                Campaign creation failed ❌
+            </motion.div>
+          )}
+        </AnimatePresence>
       </form>
     </div>
   );
