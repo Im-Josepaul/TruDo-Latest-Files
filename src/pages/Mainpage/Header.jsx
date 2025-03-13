@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import { toast } from "react-hot-toast";
 import "./css/fontawesome.css";
 import "./css/index.css";
 import "./css/owl.css";
 import "./css/animate.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [account, setAccount] = useState(null);
@@ -16,7 +15,8 @@ const Header = () => {
     setAccount(accounts[0]);
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = provider.getSigner();
-    console.log(accounts);
+    console.log("Connected account is: \n"+accounts);
+    console.log("Value of accounts[0] is: \n"+accounts[0]);
     // console.log(provider);
     // console.log(signer);
   };
@@ -38,8 +38,8 @@ const Header = () => {
               </a>
             </li>
             <li>
-              <Link to="/createCampaign">
-                <a>Create Campaign</a>
+              <Link to="/createCampaign" state={{address: account}}>
+                Create Campaign
               </Link>
             </li>
             <li>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {useLocation } from "react-router-dom";
 import "./createcamp.css";
 import { AnimatePresence, motion } from 'framer-motion';
 import { PinataSDK } from "pinata-web3";
@@ -7,12 +7,16 @@ import contractFunctions from "../../js/main.js"
 
 
 const CreateCam = () => {
+  const location = useLocation();
+  let address = location.state.address;
+  console.log(address);
+  console.log(typeof(address));
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   
   const [campaignName, setCampaignName] = useState("");
   const [description, setDescription] = useState("");
-  const [recepadd, setRecepadd] = useState("");
+  const [recepadd, setRecepadd] = useState(address || "");
   const [tokenprice, setTokenprice] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [imageFile, setImageFile] = useState();
